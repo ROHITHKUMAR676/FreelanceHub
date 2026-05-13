@@ -162,7 +162,7 @@ const Sidebar = () => {
                   <svg className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d={item.icon} />
                   </svg>
-                  {!isCollapsed ? <span className="truncate">{item.label}</span> : null}
+                  <span className={`truncate ${isCollapsed ? 'md:hidden' : ''}`}>{item.label}</span>
                 </NavLink>
               </li>
             ))}

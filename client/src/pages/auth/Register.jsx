@@ -43,6 +43,8 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
+  const validateEmail = (value) => /^\S+@\S+\.\S+$/.test(value)
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -61,6 +63,11 @@ const Register = () => {
 
     if (!payload.name || !payload.email || !payload.password) {
       setError('Name, email, and password are required')
+      return
+    }
+
+    if (!validateEmail(payload.email)) {
+      setError('Please enter a valid email address.')
       return
     }
 
@@ -94,7 +101,9 @@ const Register = () => {
       }
     } catch (err) {
       console.error('[register] failed', err)
-      setError(err.message || 'Registration failed')
+      const message = err?.message || 'Registration failed'
+      const isEmailDuplicate = err?.status === 409 || /email.*exists|already.*email|duplicate.*email/i.test(message)
+      setError(isEmailDuplicate ? 'This email address is already registered.' : message)
     } finally {
       setIsSubmitting(false)
     }

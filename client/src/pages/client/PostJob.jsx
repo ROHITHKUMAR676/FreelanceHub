@@ -22,16 +22,44 @@ const PostJob = () => {
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
+  const todayDate = new Date().toISOString().slice(0, 10)
+
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')
+
+    const parsedBudget = Number(form.budget)
+    const selectedDeadline = new Date(form.deadline)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    if (!form.title.trim() || !form.description.trim()) {
+      setError('Title and description are required.')
+      return
+    }
+
+    if (Number.isNaN(parsedBudget) || parsedBudget <= 0) {
+      setError('Budget must be greater than zero.')
+      return
+    }
+
+    if (!form.deadline) {
+      setError('Please choose a deadline.')
+      return
+    }
+
+    if (selectedDeadline < today) {
+      setError('Deadline cannot be in the past.')
+      return
+    }
+
     setSubmitting(true)
 
     try {
       await createJob({
         title: form.title.trim(),
         description: form.description.trim(),
-        budget: Number(form.budget),
+        budget: parsedBudget,
         deadline: form.deadline,
       })
 
@@ -107,7 +135,7 @@ const PostJob = () => {
                 id="budget"
                 name="budget"
                 type="number"
-                min="0"
+                min="1"
                 step="0.01"
                 value={form.budget}
                 onChange={handleChange}
@@ -126,6 +154,7 @@ const PostJob = () => {
                 id="deadline"
                 name="deadline"
                 type="date"
+                min={todayDate}
                 value={form.deadline}
                 onChange={handleChange}
                 required
