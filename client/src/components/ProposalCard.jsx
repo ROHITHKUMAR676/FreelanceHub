@@ -58,10 +58,10 @@ const ProposalCard = ({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 p-6">
+    <div className="premium-card-premium p-6 premium-card-hover group">
       <div className="flex items-start space-x-4 mb-4">
         {/* Avatar */}
-        <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+        <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-emerald to-brand-turquoise text-xl font-bold text-white shadow-glow-emerald animate-float">
           {freelancer?.name?.charAt(0).toUpperCase() ||
             proposal?.freelancerName?.charAt(0).toUpperCase() ||
             'F'}
@@ -69,12 +69,12 @@ const ProposalCard = ({
 
         {/* Freelancer Info */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-gray-900 truncate">
+          <h3 className="truncate text-lg font-semibold premium-text-gradient group-hover:scale-105 transition-transform duration-300">
             {freelancer?.name || proposal?.freelancerName || 'Freelancer'}
           </h3>
           {renderStars(rating)}
           {freelancer?.location && (
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="mt-1 text-sm text-brand-subtext">
               {freelancer.location}
             </p>
           )}
@@ -82,22 +82,22 @@ const ProposalCard = ({
 
         {/* Bid Amount */}
         <div className="text-right">
-          <div className="text-2xl font-bold text-blue-600">
+          <div className="premium-gradient-text text-3xl font-bold animate-bounce-subtle">
             ${bidAmount.toLocaleString()}
           </div>
-          <div className="text-sm text-gray-500">Bid Amount</div>
+          <div className="text-sm text-brand-subtext">Bid Amount</div>
         </div>
       </div>
 
       {/* Proposal Message */}
       <div className="mb-4">
-        <p className="text-gray-700 line-clamp-3">
+        <p className="line-clamp-3 text-brand-subtext">
           {proposal?.message || proposal?.proposalMessage || 'No message provided'}
         </p>
       </div>
 
       {/* Proposal Details */}
-      <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+      <div className="mb-4 flex items-center justify-between border-b border-brand-border pb-4">
         <div className="flex items-center space-x-4 text-sm text-gray-600">
           <div className="flex items-center space-x-1">
             <svg
@@ -137,7 +137,7 @@ const ProposalCard = ({
           {onAccept && (
             <button
               onClick={() => onAccept(proposal)}
-              className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium text-sm"
+              className="flex-1 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-panel"
             >
               Accept Proposal
             </button>
@@ -145,7 +145,7 @@ const ProposalCard = ({
           {onReject && (
             <button
               onClick={() => onReject(proposal)}
-              className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium text-sm"
+              className="flex-1 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-red-700 hover:shadow-panel"
             >
               Reject
             </button>
@@ -153,7 +153,7 @@ const ProposalCard = ({
           {onMessage && (
             <button
               onClick={() => onMessage(proposal)}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm"
+              className="premium-ghost-button px-4 py-2"
             >
               Message
             </button>

@@ -1,6 +1,6 @@
 const EmptyChatState = () => {
   return (
-    <div className="flex h-full flex-col items-center justify-center bg-white px-6 text-center">
+    <div className="flex h-full flex-col items-center justify-center bg-brand-surface px-6 text-center">
       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-xl border border-blue-700 bg-brand-primary text-white">
         <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8" aria-hidden="true">
           <path
@@ -21,3 +21,4 @@ const EmptyChatState = () => {
 }
 
 export default EmptyChatState
+

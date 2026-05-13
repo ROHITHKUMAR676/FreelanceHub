@@ -108,7 +108,7 @@ const Sidebar = () => {
         <button
           type="button"
           onClick={closeMobileSidebar}
-          className="fixed inset-0 z-40 bg-brand-background/80 md:hidden"
+          className="fixed inset-0 z-40 bg-brand-ink/25 backdrop-blur-sm md:hidden"
           aria-label="Close sidebar overlay"
         />
       ) : null}
@@ -116,15 +116,15 @@ const Sidebar = () => {
       <div className={`hidden ${desktopWidthClass} md:block`} aria-hidden="true" />
 
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col border-r border-brand-border bg-brand-background text-brand-text transition-transform duration-300 ease-in-out md:top-16 md:z-30 md:h-[calc(100vh-4rem)] ${
+        className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col border-r border-brand-border/80 bg-brand-sidebar/90 text-brand-text shadow-lift backdrop-blur-xl transition-transform duration-300 ease-in-out md:top-16 md:z-30 md:h-[calc(100vh-4rem)] ${
           isMobileOpen ? 'translate-x-0' : '-translate-x-full'
         } ${desktopWidthClass} md:translate-x-0`}
       >
-        <div className="border-b border-brand-border p-5">
+        <div className="border-b border-brand-border/80 p-5">
           <div className={`flex items-center ${isCollapsed ? 'md:justify-center' : 'justify-between'}`}>
             {!isCollapsed ? (
               <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-brand-subtext">Workspace</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-brand-primary">Workspace</p>
                 <h2 className="text-lg font-semibold capitalize text-brand-text">{user?.role || 'User'} Panel</h2>
               </div>
             ) : (
@@ -134,7 +134,7 @@ const Sidebar = () => {
             <button
               type="button"
               onClick={closeMobileSidebar}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-2xl border border-brand-border bg-brand-background text-brand-text transition hover:bg-brand-messageReceived md:hidden"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-2xl border border-brand-border bg-brand-surface/80 text-brand-text transition hover:bg-brand-messageReceived md:hidden"
               aria-label="Close sidebar"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,10 +152,10 @@ const Sidebar = () => {
                   to={item.path}
                   onClick={closeMobileSidebar}
                   className={({ isActive }) =>
-                    `group flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                    `group flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold transition-all duration-300 ${
                       isActive
-                        ? 'border-brand-border bg-brand-primary text-white shadow-md'
-                        : 'border-brand-border bg-brand-background text-brand-subtext hover:bg-brand-messageSent hover:text-brand-text'
+                        ? 'border-transparent bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-glow'
+                        : 'border-brand-border bg-brand-surface/55 text-brand-subtext hover:-translate-y-0.5 hover:border-brand-primary/30 hover:bg-brand-surface hover:text-brand-text hover:shadow-panel'
                     } ${isCollapsed ? 'md:justify-center md:px-2' : ''}`
                   }
                 >

@@ -37,7 +37,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-brand-border bg-brand-background text-brand-text">
+    <nav className="sticky top-0 z-50 border-b border-brand-border/80 bg-brand-surface/80 text-brand-text shadow-panel backdrop-blur-2xl premium-bg-gradient">
       <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 min-w-0 items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
@@ -45,7 +45,7 @@ const Navbar = () => {
               <button
                 type="button"
                 onClick={toggleSidebar}
-                className="hidden h-10 w-10 items-center justify-center rounded-lg border border-brand-border text-brand-text md:inline-flex"
+                className="hidden h-10 w-10 items-center justify-center rounded-xl border border-brand-border bg-brand-surface/70 text-brand-text shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-primary/40 hover:shadow-panel hover:shadow-glow md:inline-flex"
                 aria-label="Toggle sidebar"
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,11 +59,11 @@ const Navbar = () => {
               </button>
             )}
 
-            <Link to="/" className="flex min-w-0 items-center gap-2">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-primary">
+            <Link to="/" className="group flex min-w-0 items-center gap-2">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-gold to-brand-emerald shadow-glow-gold transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110 animate-float">
                 <span className="text-lg font-bold text-white">F</span>
               </div>
-              <span className="truncate text-base font-semibold sm:text-lg">FreelanceHub</span>
+              <span className="truncate text-base font-bold tracking-tight premium-text-gradient sm:text-lg">FreelanceHub</span>
             </Link>
           </div>
 
@@ -72,7 +72,7 @@ const Navbar = () => {
               <>
                 <Link
                   to="/messages"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-brand-border text-brand-text hover:bg-slate-100"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-brand-border bg-brand-surface/70 text-brand-text shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-primary/40 hover:bg-brand-surface hover:shadow-panel"
                   aria-label="Messages"
                 >
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,9 +89,9 @@ const Navbar = () => {
                   <button
                     type="button"
                     onClick={() => setDropdownOpen((prev) => !prev)}
-                    className="flex items-center gap-2 rounded-lg border border-brand-border px-2 py-1 hover:bg-slate-100"
+                    className="flex items-center gap-2 rounded-xl border border-brand-border bg-brand-surface/70 px-2 py-1 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-primary/40 hover:bg-brand-surface hover:shadow-panel"
                   >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-primary text-sm font-semibold text-white">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-brand-primary to-brand-secondary text-sm font-semibold text-white shadow-glow">
                       {user?.name?.charAt(0).toUpperCase() || 'U'}
                     </div>
                     <svg
@@ -110,25 +110,25 @@ const Navbar = () => {
                   </button>
 
                   {dropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-52 rounded-xl border border-brand-border bg-brand-background py-1 shadow-lg">
+                    <div className="absolute right-0 mt-2 w-52 overflow-hidden rounded-2xl border border-brand-border/80 bg-brand-surface/95 py-1 shadow-lift backdrop-blur-xl animate-fade-up">
                       <Link
                         to={getDashboardPath()}
                         onClick={() => setDropdownOpen(false)}
-                        className="block px-4 py-2 text-sm text-brand-text hover:bg-slate-100"
+                        className="block px-4 py-2 text-sm text-brand-text transition hover:bg-brand-messageSent"
                       >
                         Dashboard
                       </Link>
                       <Link
                         to={`/${user.role}/profile`}
                         onClick={() => setDropdownOpen(false)}
-                        className="block px-4 py-2 text-sm text-brand-text hover:bg-slate-100"
+                        className="block px-4 py-2 text-sm text-brand-text transition hover:bg-brand-messageSent"
                       >
                         Profile
                       </Link>
                       <button
                         type="button"
                         onClick={handleLogout}
-                        className="block w-full px-4 py-2 text-left text-sm text-brand-text hover:bg-slate-100"
+                        className="block w-full px-4 py-2 text-left text-sm text-brand-text transition hover:bg-red-50 hover:text-red-600"
                       >
                         Logout
                       </button>
@@ -138,10 +138,10 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link to="/login" className="rounded-lg border border-brand-border px-4 py-2 text-sm font-medium text-brand-text hover:bg-slate-100">
+                <Link to="/login" className="premium-ghost-button px-4 py-2">
                   Login
                 </Link>
-                <Link to="/register" className="rounded-lg bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                <Link to="/register" className="premium-button px-4 py-2">
                   Sign Up
                 </Link>
               </>
@@ -151,7 +151,7 @@ const Navbar = () => {
           <button
             type="button"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-brand-border text-brand-text md:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-brand-border bg-brand-surface/70 text-brand-text shadow-sm transition hover:bg-brand-surface md:hidden"
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
           >
@@ -220,7 +220,7 @@ const Navbar = () => {
                 <Link
                   to="/register"
                   onClick={closeMobileMenu}
-                  className="w-full rounded-lg bg-brand-primary px-3 py-2 text-sm font-medium text-white hover:bg-blue-800"
+                  className="premium-button w-full px-3 py-2"
                 >
                   Sign Up
                 </Link>

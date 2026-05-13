@@ -1,4 +1,4 @@
-import { useState, useContext, useRef, useEffect } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 
@@ -18,123 +18,63 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const handleLogout = () => {
-    logout()               // ✅ central auth logic
-  }
-
   const getDashboardPath = () => {
     if (!user) return '/'
     return user.role === 'client' ? '/client/dashboard' : '/freelancer/dashboard'
   }
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-md border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo and Platform Name */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">F</span>
+    <nav className="sticky top-0 z-50 border-b border-brand-border/70 bg-brand-surface/80 shadow-sm backdrop-blur-xl">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <Link to="/" className="group flex items-center space-x-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-primary to-brand-secondary shadow-glow transition duration-300 group-hover:rotate-3">
+              <span className="text-lg font-bold text-white">F</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">FreelanceHub</span>
+            <span className="text-xl font-bold tracking-tight text-brand-text">FreelanceHub</span>
           </Link>
 
-          {/* Right Side Navigation */}
           {user ? (
             <div className="flex items-center space-x-4">
-              {/* Notifications */}
-              <button className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors">
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                  />
+              <button className="relative rounded-xl p-2 text-brand-subtext transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-surface hover:text-brand-primary hover:shadow-panel">
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
               </button>
 
-              {/* Messages */}
-              <Link
-                to="/messages"
-                className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                  />
+              <Link to="/messages" className="rounded-xl p-2 text-brand-subtext transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-surface hover:text-brand-primary hover:shadow-panel">
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </Link>
 
-              {/* User Avatar Dropdown */}
               <div className="relative" ref={dropdownRef}>
                 <button
+                  type="button"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center space-x-2 focus:outline-none"
+                  className="flex items-center space-x-2 rounded-xl border border-brand-border bg-brand-surface/70 px-2 py-1 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-panel focus:outline-none"
                 >
-                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-brand-primary to-brand-secondary font-semibold text-white shadow-glow">
                     {user?.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
-                  <svg
-                    className={`w-4 h-4 text-gray-600 transition-transform ${
-                      dropdownOpen ? 'rotate-180' : ''
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
+                  <svg className={`h-4 w-4 text-brand-subtext transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
 
-                {/* Dropdown Menu */}
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                    <Link
-                      to={getDashboardPath()}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setDropdownOpen(false)}
-                    >
+                  <div className="absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-2xl border border-brand-border/70 bg-brand-surface/90 py-1 shadow-lift backdrop-blur-xl animate-fade-up">
+                    <Link to={getDashboardPath()} className="block px-4 py-2 text-sm text-brand-text transition hover:bg-brand-messageSent" onClick={() => setDropdownOpen(false)}>
                       Dashboard
                     </Link>
-                    <Link
-                      to={`/${user.role}/profile`}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setDropdownOpen(false)}
-                    >
+                    <Link to={`/${user.role}/profile`} className="block px-4 py-2 text-sm text-brand-text transition hover:bg-brand-messageSent" onClick={() => setDropdownOpen(false)}>
                       Profile
                     </Link>
-                    <Link
-                      to="/settings"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setDropdownOpen(false)}
-                    >
+                    <Link to="/settings" className="block px-4 py-2 text-sm text-brand-text transition hover:bg-brand-messageSent" onClick={() => setDropdownOpen(false)}>
                       Settings
                     </Link>
-                    <hr className="my-1 border-gray-200" />
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                    >
+                    <button type="button" onClick={logout} className="block w-full px-4 py-2 text-left text-sm text-red-600 transition hover:bg-red-50">
                       Logout
                     </button>
                   </div>
@@ -143,16 +83,10 @@ const Navbar = () => {
             </div>
           ) : (
             <div className="flex items-center space-x-4">
-              <Link
-                to="/login"
-                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-              >
+              <Link to="/login" className="font-semibold text-brand-subtext transition hover:text-brand-primary">
                 Login
               </Link>
-              <Link
-                to="/register"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
+              <Link to="/register" className="premium-button px-4 py-2">
                 Sign Up
               </Link>
             </div>
@@ -164,5 +98,4 @@ const Navbar = () => {
 }
 
 export default Navbar
-
 

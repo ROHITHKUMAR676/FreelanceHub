@@ -74,14 +74,15 @@ const ClientProfile = () => {
   }
 
   return (
-    <section className="flex min-h-[calc(100vh-10rem)] items-center justify-center bg-brand-background px-4 py-8 text-brand-text">
-      <div className="w-full max-w-2xl rounded-2xl border border-brand-border bg-brand-background p-6 shadow-panel sm:p-8">
-        <h1 className="text-2xl font-semibold text-brand-text">Client Profile</h1>
-        <p className="mt-1 text-sm text-brand-subtext">Manage your account details</p>
+    <section className="mx-auto w-full max-w-4xl space-y-6 text-brand-text">
+      <div className="premium-card-premium p-6 sm:p-8">
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-brand-primary">Account settings</p>
+        <h1 className="mt-2 text-3xl font-black premium-text-gradient">Client Profile</h1>
+        <p className="mt-2 text-sm text-brand-subtext">Manage your account details</p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label htmlFor="client-name" className="mb-1 block text-sm font-medium text-brand-text">
+            <label htmlFor="client-name" className="mb-1 block text-sm font-medium text-brand-subtext">
               Name
             </label>
             <input
@@ -90,13 +91,13 @@ const ClientProfile = () => {
               type="text"
               value={formState.name}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-brand-border bg-brand-background px-4 py-2 text-brand-text outline-none"
+              className="app-input"
               autoComplete="name"
             />
           </div>
 
           <div>
-            <label htmlFor="client-email" className="mb-1 block text-sm font-medium text-brand-text">
+            <label htmlFor="client-email" className="mb-1 block text-sm font-medium text-brand-subtext">
               Email
             </label>
             <input
@@ -105,13 +106,13 @@ const ClientProfile = () => {
               type="email"
               value={formState.email}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-brand-border bg-brand-background px-4 py-2 text-brand-text outline-none"
+              className="app-input"
               autoComplete="email"
             />
           </div>
 
           <div>
-            <label htmlFor="client-role" className="mb-1 block text-sm font-medium text-brand-text">
+            <label htmlFor="client-role" className="mb-1 block text-sm font-medium text-brand-subtext">
               Role
             </label>
             <input
@@ -119,27 +120,27 @@ const ClientProfile = () => {
               type="text"
               value={roleLabel}
               readOnly
-              className="w-full rounded-2xl border border-brand-border bg-brand-messageReceived px-4 py-2 text-brand-text"
+              className="app-input"
             />
           </div>
 
           {statusMessage ? (
-            <p className="rounded-xl border border-brand-border bg-brand-messageSent px-3 py-2 text-sm text-brand-text">
+            <p className="rounded-2xl border border-brand-emerald/30 bg-brand-emerald/10 px-3 py-2 text-sm text-brand-emerald">
               {statusMessage}
             </p>
           ) : null}
 
           {errorMessage ? (
-            <p className="rounded-xl border border-brand-border bg-brand-messageReceived px-3 py-2 text-sm text-brand-text">
+            <p className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-500">
               {errorMessage}
             </p>
           ) : null}
 
-          <div className="flex items-center gap-3 pt-2">
+          <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
             <button
               type="submit"
               disabled={!hasChanges || isSaving}
-              className="rounded-2xl bg-brand-primary px-5 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+              className="premium-button disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSaving ? 'Saving...' : 'Save'}
             </button>
@@ -147,7 +148,7 @@ const ClientProfile = () => {
             <button
               type="button"
               onClick={() => logout()}
-              className="rounded-2xl border border-brand-border bg-brand-background px-5 py-2 text-sm font-semibold text-brand-text"
+              className="premium-ghost-button"
             >
               Logout
             </button>
@@ -159,3 +160,4 @@ const ClientProfile = () => {
 }
 
 export default ClientProfile
+

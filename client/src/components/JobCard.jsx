@@ -14,10 +14,10 @@ const JobCard = ({ job }) => {
   const shortDescription = (job?.description || 'No description provided for this job.').slice(0, 140)
 
   return (
-    <Card className="h-full p-5">
+    <Card className="group h-full p-6 premium-card-premium premium-card-hover">
       <div className="flex h-full flex-col gap-5">
         <div className="space-y-2">
-          <h3 className="line-clamp-2 text-xl font-semibold text-brand-text">{job?.title || 'Untitled Job'}</h3>
+          <h3 className="line-clamp-2 text-xl font-bold tracking-tight premium-text-gradient transition-all duration-300 group-hover:scale-105">{job?.title || 'Untitled Job'}</h3>
           <p className="text-sm text-brand-subtext">Client: {job?.client?.name || 'Anonymous'}</p>
         </div>
 
@@ -27,14 +27,14 @@ const JobCard = ({ job }) => {
 
         <div className="mt-auto flex items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="primary">INR {Number(job?.budget || 0).toLocaleString()}</Badge>
+            <Badge variant="primary" className="animate-bounce-subtle">INR {Number(job?.budget || 0).toLocaleString()}</Badge>
             <Badge variant="subtle">Deadline: {formatDeadline(job?.deadline)}</Badge>
           </div>
 
           {jobId ? (
             <Link
               to={`/job/${jobId}`}
-              className="rounded-2xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:shadow-lg"
+              className="premium-button-gold animate-glow-pulse"
             >
               View Job
             </Link>

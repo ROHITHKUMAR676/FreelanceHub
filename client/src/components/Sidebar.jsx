@@ -37,23 +37,23 @@ const Sidebar = () => {
   )
 
   const SidebarContent = () => (
-    <aside className="w-64 bg-white border-r h-full flex flex-col">
-      <div className="p-4 border-b">
-        <h2 className="text-lg font-semibold capitalize">
+    <aside className="flex h-full w-64 flex-col border-r border-brand-border/70 bg-brand-surface/80 shadow-lift backdrop-blur-xl">
+      <div className="border-b border-brand-border/70 p-4">
+        <h2 className="text-lg font-bold capitalize tracking-tight text-brand-text">
           {user?.role || 'Dashboard'}
         </h2>
       </div>
 
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 space-y-2 p-4">
         {menuItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-lg ${
+              `flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold transition-all duration-300 ${
                 isActive
-                  ? 'bg-blue-50 text-blue-600 font-medium'
-                  : 'text-gray-700 hover:bg-gray-50'
+                  ? 'border-transparent bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-glow'
+                  : 'border-brand-border bg-brand-surface/60 text-brand-subtext hover:-translate-y-0.5 hover:border-brand-primary/30 hover:bg-brand-surface hover:text-brand-text hover:shadow-panel'
               }`
             }
             onClick={() => setIsMobileOpen(false)}
@@ -70,14 +70,14 @@ const Sidebar = () => {
     <>
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="lg:hidden fixed top-20 left-4 z-40 p-2 bg-white rounded shadow"
+        className="fixed left-4 top-20 z-40 rounded-xl border border-brand-border bg-brand-surface/85 p-2 text-sm font-semibold shadow-panel backdrop-blur transition hover:-translate-y-0.5 lg:hidden"
       >
-        ☰
+        Menu
       </button>
 
       {isMobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-30"
+          className="fixed inset-0 z-30 bg-brand-ink/30 backdrop-blur-sm lg:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
@@ -87,7 +87,7 @@ const Sidebar = () => {
       </div>
 
       <div
-        className={`lg:hidden fixed left-0 top-0 h-full z-40 transition ${
+        className={`fixed left-0 top-0 z-40 h-full transition duration-300 lg:hidden ${
           isMobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -98,3 +98,4 @@ const Sidebar = () => {
 }
 
 export default Sidebar
+

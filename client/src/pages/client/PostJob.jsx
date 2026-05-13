@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { CalendarDays, FileText, IndianRupee, Sparkles } from 'lucide-react'
 import Card from '../../components/ui/Card'
 import { createJob } from '../../services/jobService'
 
@@ -43,17 +44,29 @@ const PostJob = () => {
   }
 
   return (
-    <section className="mx-auto w-full max-w-4xl space-y-8 p-2 sm:p-4">
-      <Card className="p-6">
-        <p className="text-sm font-medium text-brand-subtext">Client Workspace</p>
-        <h1 className="mt-1 text-2xl font-semibold text-brand-text">Post a New Job</h1>
-        <p className="mt-2 text-sm text-brand-subtext">Create a clear job brief so freelancers can send strong proposals.</p>
+    <section className="mx-auto w-full max-w-5xl space-y-6 p-1 text-brand-text">
+      <Card className="overflow-hidden p-0">
+        <div className="relative p-6 sm:p-8">
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/10 via-transparent to-brand-secondary/10" />
+          <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-brand-primary">Client Workspace</p>
+              <h1 className="mt-2 text-3xl font-black premium-text-gradient">Post a New Job</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-brand-subtext">Create a clear job brief so freelancers can send strong proposals with realistic plans and timelines.</p>
+            </div>
+            <div className="grid h-16 w-16 place-items-center rounded-3xl bg-gradient-to-br from-brand-primary to-brand-secondary text-white shadow-glow">
+              <Sparkles size={28} />
+            </div>
+          </div>
+        </div>
       </Card>
 
-      <Card as="form" onSubmit={handleSubmit} className="p-6">
-        <div className="grid grid-cols-1 gap-6">
+      <Card as="form" onSubmit={handleSubmit} className="p-6 sm:p-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_18rem]">
+          <div className="space-y-6">
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-brand-text">
+            <label htmlFor="title" className="flex items-center gap-2 text-sm font-bold text-brand-text">
+              <FileText size={16} className="text-brand-primary" />
               Job Title
             </label>
             <input
@@ -64,12 +77,12 @@ const PostJob = () => {
               onChange={handleChange}
               required
               placeholder="e.g. Build a modern portfolio website"
-              className="mt-2 w-full rounded-2xl border border-brand-border bg-brand-background p-3 text-brand-text shadow-md transition focus:outline-none focus:shadow-lg"
+              className="app-input mt-2"
             />
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-brand-text">
+            <label htmlFor="description" className="block text-sm font-bold text-brand-text">
               Job Description
             </label>
             <textarea
@@ -80,13 +93,14 @@ const PostJob = () => {
               onChange={handleChange}
               required
               placeholder="Share project scope, expectations, and key deliverables"
-              className="mt-2 w-full rounded-2xl border border-brand-border bg-brand-background p-3 text-brand-text shadow-md transition focus:outline-none focus:shadow-lg"
+              className="app-input mt-2 min-h-40"
             />
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
-              <label htmlFor="budget" className="block text-sm font-medium text-brand-text">
+              <label htmlFor="budget" className="flex items-center gap-2 text-sm font-bold text-brand-text">
+                <IndianRupee size={16} className="text-brand-primary" />
                 Budget
               </label>
               <input
@@ -99,12 +113,13 @@ const PostJob = () => {
                 onChange={handleChange}
                 required
                 placeholder="Enter total budget"
-                className="mt-2 w-full rounded-2xl border border-brand-border bg-brand-background p-3 text-brand-text shadow-md transition focus:outline-none focus:shadow-lg"
+                className="app-input mt-2"
               />
             </div>
 
             <div>
-              <label htmlFor="deadline" className="block text-sm font-medium text-brand-text">
+              <label htmlFor="deadline" className="flex items-center gap-2 text-sm font-bold text-brand-text">
+                <CalendarDays size={16} className="text-brand-primary" />
                 Deadline
               </label>
               <input
@@ -114,7 +129,7 @@ const PostJob = () => {
                 value={form.deadline}
                 onChange={handleChange}
                 required
-                className="mt-2 w-full rounded-2xl border border-brand-border bg-brand-background p-3 text-brand-text shadow-md transition focus:outline-none focus:shadow-lg"
+                className="app-input mt-2"
               />
             </div>
           </div>
@@ -125,13 +140,22 @@ const PostJob = () => {
             </div>
           ) : null}
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full rounded-2xl border border-brand-border bg-brand-primary p-3 text-sm font-semibold text-white shadow-md transition hover:shadow-lg disabled:opacity-80"
-          >
-            {submitting ? 'Posting Job...' : 'Post Job'}
+          <button type="submit" disabled={submitting} className="premium-button w-full disabled:cursor-not-allowed disabled:opacity-60">
+            {submitting ? 'Publishing...' : 'Publish Job'}
           </button>
+          </div>
+
+          <aside className="rounded-[24px] border border-brand-border/70 bg-brand-background/70 p-5">
+            <p className="text-sm font-black text-brand-text">Brief quality checklist</p>
+            <div className="mt-4 space-y-3 text-sm text-brand-subtext">
+              {['Specific deliverables', 'Realistic budget', 'Clear deadline', 'Success criteria'].map((item) => (
+                <div key={item} className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-brand-secondary" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </aside>
         </div>
       </Card>
     </section>

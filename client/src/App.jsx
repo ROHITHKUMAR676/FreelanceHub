@@ -31,16 +31,22 @@ import PublicRoute from './routes/PublicRoute'
 import { AuthContext } from './context/AuthContext'
 import TestChat from "./TestChat";
 import ClientProjects from "./pages/ClientProjects";
+import OnboardingTour from './components/OnboardingTour'
+import AssistantWidget from './components/AssistantWidget'
+import AppIntro from './components/ui/AppIntro'
+import PageTransition from './components/ui/PageTransition'
 
 const DashboardLayout = () => {
   return (
-    <div className="min-h-screen bg-brand-background text-brand-text">
+    <div className="premium-shell min-h-screen text-brand-text">
       <Navbar />
       <div className="flex min-h-[calc(100vh-4rem)] w-full">
         <Sidebar />
-        <main className="min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6 md:p-8">
+        <main className="relative min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6 md:p-8">
           <div className="mx-auto w-full max-w-7xl">
-            <Outlet />
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
           </div>
         </main>
       </div>
@@ -56,96 +62,101 @@ const RoleDashboardRedirect = () => {
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/contact" element={<Contact />} />
+    <>
+      <AppIntro />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
 
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <RoleDashboardRedirect />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <RoleDashboardRedirect />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/login"
-        element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <PublicRoute>
-            <Register />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/choose-role"
-        element={
-          <PublicRoute>
-            <ChooseRole />
-          </PublicRoute>
-        }
-      />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/choose-role"
+          element={
+            <PublicRoute>
+              <ChooseRole />
+            </PublicRoute>
+          }
+        />
 
-      <Route
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/messages" element={<Messages />} />
-        <Route path="/job/:id" element={<JobDetails />} />
-        <Route path="/jobs/:id" element={<ProjectDetails />} />
-        <Route path="/proposals/:id" element={<ProposalDetails />} />
-      </Route>
+        <Route
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/job/:id" element={<JobDetails />} />
+          <Route path="/jobs/:id" element={<ProjectDetails />} />
+          <Route path="/proposals/:id" element={<ProposalDetails />} />
+        </Route>
 
-      <Route
-        path="/client"
-        element={
-          <ProtectedRoute role="client">
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="dashboard" element={<ClientDashboard />} />
-        <Route path="profile" element={<ClientProfile />} />
-        <Route path="post-job" element={<PostJob />} />
-        <Route path="my-jobs" element={<MyJobs />} />
-        <Route path="proposals/:projectId" element={<ProjectProposals />} />
-        <Route path="/client/projects" element={<ClientProjects />} />
-        <Route path="proposals" element={<AllProposals />} />
-        <Route path="transactions" element={<Transactions />} />
-      </Route>
+        <Route
+          path="/client"
+          element={
+            <ProtectedRoute role="client">
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<ClientDashboard />} />
+          <Route path="profile" element={<ClientProfile />} />
+          <Route path="post-job" element={<PostJob />} />
+          <Route path="my-jobs" element={<MyJobs />} />
+          <Route path="proposals/:projectId" element={<ProjectProposals />} />
+          <Route path="/client/projects" element={<ClientProjects />} />
+          <Route path="proposals" element={<AllProposals />} />
+          <Route path="transactions" element={<Transactions />} />
+        </Route>
 
-      <Route
-        path="/freelancer"
-        element={
-          <ProtectedRoute role="freelancer">
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="dashboard" element={<FreelancerDashboard />} />
-        <Route path="browse-jobs" element={<BrowseJobs />} />
-        <Route path="my-proposals" element={<MyProposals />} />
-        <Route path="proposal/:projectId" element={<SubmitProposal />} />
-        <Route path="active-projects" element={<ActiveProjects />} />
-        <Route path="earnings" element={<Earnings />} />
-        <Route path="profile" element={<FreelancerProfile />} />
-      </Route>
+        <Route
+          path="/freelancer"
+          element={
+            <ProtectedRoute role="freelancer">
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<FreelancerDashboard />} />
+          <Route path="browse-jobs" element={<BrowseJobs />} />
+          <Route path="my-proposals" element={<MyProposals />} />
+          <Route path="proposal/:projectId" element={<SubmitProposal />} />
+          <Route path="active-projects" element={<ActiveProjects />} />
+          <Route path="earnings" element={<Earnings />} />
+          <Route path="profile" element={<FreelancerProfile />} />
+        </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-      <Route path="/test-chat" element={<TestChat />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/test-chat" element={<TestChat />} />
+      </Routes>
+      <OnboardingTour />
+      <AssistantWidget />
+    </>
   )
 }
 

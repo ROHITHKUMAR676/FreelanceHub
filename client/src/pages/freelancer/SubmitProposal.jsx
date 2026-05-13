@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { Send, ShieldCheck } from 'lucide-react'
 import { createProposal } from '../../services/proposalService'
 
 const SubmitProposal = () => {
@@ -33,13 +34,17 @@ const SubmitProposal = () => {
   }
 
   return (
-    <section className="mx-auto w-full max-w-2xl rounded-2xl border border-brand-border bg-brand-background p-6 text-brand-text">
-      <h1 className="text-xl font-semibold text-brand-text">Send Proposal</h1>
-      <p className="mt-1 text-sm text-brand-subtext">Share your approach for this job.</p>
+    <section className="mx-auto w-full max-w-3xl space-y-5 text-brand-text">
+      <div className="premium-card-premium p-6">
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-brand-primary">Win the brief</p>
+        <h1 className="mt-2 text-3xl font-black premium-text-gradient">Send Proposal</h1>
+        <p className="mt-2 text-sm text-brand-subtext">Share your approach, proof of fit, and next steps for this job.</p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+      <form onSubmit={handleSubmit} className="premium-card space-y-5 p-6">
         <div>
-          <label htmlFor="proposal-text" className="mb-2 block text-sm font-medium text-brand-text">
+          <label htmlFor="proposal-text" className="mb-2 flex items-center gap-2 text-sm font-bold text-brand-text">
+            <Send size={16} className="text-brand-primary" />
             Proposal
           </label>
           <textarea
@@ -47,9 +52,18 @@ const SubmitProposal = () => {
             value={text}
             onChange={(event) => setText(event.target.value)}
             rows={8}
-            className="w-full rounded-2xl border border-brand-border bg-brand-background p-3 text-sm text-brand-text"
-            placeholder="Write your proposal"
+            className="app-input min-h-48 text-sm"
+            placeholder="Write a concise plan, timeline, relevant experience, and what you need from the client."
           />
+        </div>
+
+        <div className="rounded-2xl border border-brand-primary/20 bg-brand-primary/10 p-4">
+          <div className="flex items-start gap-3">
+            <ShieldCheck size={18} className="mt-0.5 text-brand-primary" />
+            <p className="text-sm leading-6 text-brand-subtext">
+              Tip: complete your profile with LinkedIn and GitHub URLs so clients see stronger Trust Level signals on your proposal.
+            </p>
+          </div>
         </div>
 
         {error ? (
@@ -61,7 +75,7 @@ const SubmitProposal = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-xl bg-brand-primary px-5 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+          className="premium-button px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? 'Sending...' : 'Send'}
         </button>

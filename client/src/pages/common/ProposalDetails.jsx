@@ -98,7 +98,7 @@ const ProposalDetails = () => {
         </p>
       )}
 
-      <div className="bg-white p-6 rounded-xl shadow space-y-4">
+      <div className="bg-brand-surface p-6 rounded-xl shadow space-y-4">
 
         <div>
           <h2 className="font-semibold">Title</h2>

@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { io } from 'socket.io-client'
+import { Paperclip, Send, Sparkles } from 'lucide-react'
 import { AuthContext } from '../../context/AuthContext'
 import { getJson } from '../../utils/api'
 
@@ -7,10 +8,7 @@ const SOCKET_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
 const getMessageId = (message) => {
   if (!message) return null
-
-  if (message._id || message.id) {
-    return message._id || message.id
-  }
+  if (message._id || message.id) return message._id || message.id
 
   const senderKey =
     typeof message.sender === 'string'
@@ -35,28 +33,19 @@ const sortByCreatedAt = (items) =>
 
 const mergeUniqueMessages = (existing, incoming) => {
   const map = new Map()
-
-  existing.forEach((message) => {
-    map.set(getMessageId(message), message)
-  })
-
-  incoming.forEach((message) => {
-    map.set(getMessageId(message), message)
-  })
-
+  existing.forEach((message) => map.set(getMessageId(message), message))
+  incoming.forEach((message) => map.set(getMessageId(message), message))
   return sortByCreatedAt(Array.from(map.values()))
 }
 
 const formatTime = (createdAt) => {
   if (!createdAt) return ''
-
   const date = new Date(createdAt)
   if (Number.isNaN(date.getTime())) return ''
-
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-const Chat = ({ conversationId, receiverId }) => {
+const Chat = ({ conversationId, receiverId, receiver }) => {
   const { user } = useContext(AuthContext)
   const currentUserId = useMemo(() => user?._id || user?.id || '', [user])
 
@@ -79,7 +68,6 @@ const Chat = ({ conversationId, receiverId }) => {
 
   useEffect(() => {
     activeConversationRef.current = conversationId || ''
-
     const socket = socketRef.current
     if (socket && socket.connected && conversationId) {
       socket.emit('joinRoom', conversationId)
@@ -91,7 +79,7 @@ const Chat = ({ conversationId, receiverId }) => {
       setMessages([])
       setIsLoading(false)
       setError('')
-      return
+      return undefined
     }
 
     let active = true
@@ -109,9 +97,7 @@ const Chat = ({ conversationId, receiverId }) => {
         if (!active) return
         setError(fetchError?.message || 'Failed to load messages')
       } finally {
-        if (active) {
-          setIsLoading(false)
-        }
+        if (active) setIsLoading(false)
       }
     }
 
@@ -123,22 +109,19 @@ const Chat = ({ conversationId, receiverId }) => {
   }, [conversationId])
 
   useEffect(() => {
-    if (socketRef.current) return
+    if (socketRef.current) return undefined
 
     const socket = io(SOCKET_URL, { withCredentials: true })
     socketRef.current = socket
 
     const handleConnect = () => {
       const activeConversationId = activeConversationRef.current
-      if (activeConversationId) {
-        socket.emit('joinRoom', activeConversationId)
-      }
+      if (activeConversationId) socket.emit('joinRoom', activeConversationId)
     }
 
     const handleReceiveMessage = (message) => {
       const activeConversationId = activeConversationRef.current
       if (!message || message.conversationId !== activeConversationId) return
-
       setMessages((previous) => mergeUniqueMessages(previous, [message]))
     }
 
@@ -178,52 +161,67 @@ const Chat = ({ conversationId, receiverId }) => {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-brand-border bg-brand-background text-brand-text">
-      <header className="border-b border-brand-border px-5 py-4">
-        <h2 className="text-lg font-semibold text-brand-text">Conversation</h2>
+    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-[26px] border border-brand-border/70 bg-brand-surface/95 text-brand-text shadow-panel backdrop-blur-xl">
+      <header className="border-b border-brand-border/70 bg-brand-surface/95 px-5 py-4 backdrop-blur">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-brand-primary to-brand-secondary text-base font-black text-white shadow-glow">
+              {(receiver?.name || receiver?.email || 'U').slice(0, 1).toUpperCase()}
+            </div>
+            <div className="min-w-0">
+              <h2 className="truncate text-lg font-black text-brand-text">{receiver?.name || 'Conversation'}</h2>
+              <p className="truncate text-sm text-brand-subtext">{receiver?.email || 'Project chat'}</p>
+            </div>
+          </div>
+          <span className="hidden items-center gap-1.5 rounded-full border border-brand-emerald/25 bg-brand-emerald/10 px-3 py-1 text-xs font-bold text-brand-emerald sm:inline-flex">
+            <span className="h-2 w-2 rounded-full bg-brand-emerald" />
+            Secure chat
+          </span>
+        </div>
       </header>
 
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
+      <div className="min-h-0 flex-1 overflow-y-auto bg-[radial-gradient(circle_at_18%_0%,rgba(0,184,148,0.08),transparent_20rem),radial-gradient(circle_at_92%_18%,rgba(0,122,255,0.08),transparent_22rem)] px-4 py-5 sm:px-6">
         {isLoading ? (
-          <p className="text-sm text-brand-subtext">Loading messages...</p>
+          <p className="rounded-2xl border border-brand-border bg-brand-background/70 p-4 text-sm text-brand-subtext">Loading messages...</p>
         ) : null}
 
         {!isLoading && error ? (
-          <p className="text-sm text-brand-subtext">{error}</p>
+          <p className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-500">{error}</p>
         ) : null}
 
         {!isLoading && !error && messages.length === 0 ? (
-          <div className="flex h-full min-h-[220px] items-center justify-center text-sm text-brand-subtext">
-            Start conversation
+          <div className="flex h-full min-h-[260px] items-center justify-center">
+            <div className="max-w-sm rounded-[26px] border border-dashed border-brand-border bg-brand-surface/80 p-6 text-center shadow-panel">
+              <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-brand-primary/10 text-brand-primary">
+                <Sparkles size={24} />
+              </div>
+              <h3 className="mt-4 text-lg font-black text-brand-text">Start the conversation</h3>
+              <p className="mt-2 text-sm leading-6 text-brand-subtext">Send a clear message, project update, or delivery question.</p>
+            </div>
           </div>
         ) : null}
 
         {!isLoading && !error && messages.length > 0 ? (
-          <div className="space-y-3 pb-2">
+          <div className="space-y-4 pb-2">
             {messages.map((message) => {
               const isMine = getSenderId(message.sender) === currentUserId
 
               return (
-                <div
-                  key={getMessageId(message)}
-                  className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
-                >
+                <div key={getMessageId(message)} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                   <article
-                    className={`max-w-[70%] rounded-2xl px-4 py-2 text-brand-text ${
+                    className={`max-w-[78%] rounded-[24px] px-4 py-3 text-sm shadow-sm transition-all duration-300 sm:max-w-[68%] ${
                       isMine
-                        ? 'bg-brand-messageSent text-right'
+                        ? 'rounded-br-md bg-gradient-to-r from-brand-primary to-brand-secondary text-right text-white shadow-glow'
                         : message.type === 'revision'
-                          ? 'bg-yellow-50 text-left'
-                          : 'bg-brand-messageReceived text-left'
+                          ? 'rounded-bl-md border border-yellow-400/30 bg-yellow-500/10 text-left text-brand-text'
+                          : 'rounded-bl-md border border-brand-border/70 bg-brand-surface/95 text-left text-brand-text'
                     }`}
                   >
                     {message.type === 'revision' ? (
-                      <p className="mb-1 text-xs font-bold text-yellow-500">🔁 Revision Requested</p>
+                      <p className="mb-1 text-xs font-black uppercase tracking-wide text-yellow-600">Revision Requested</p>
                     ) : null}
-                    <p className="whitespace-pre-wrap break-words text-sm text-brand-text">
-                      {message.text}
-                    </p>
-                    <p className="mt-1 text-xs text-brand-subtext">{formatTime(message.createdAt)}</p>
+                    <p className="whitespace-pre-wrap break-words text-sm leading-6">{message.text}</p>
+                    <p className={`mt-2 text-xs ${isMine ? 'text-white/70' : 'text-brand-subtext'}`}>{formatTime(message.createdAt)}</p>
                   </article>
                 </div>
               )
@@ -234,24 +232,30 @@ const Chat = ({ conversationId, receiverId }) => {
         <div ref={endRef} />
       </div>
 
-      <form
-        onSubmit={handleSend}
-        className="sticky bottom-0 border-t border-brand-border bg-brand-background px-4 py-3"
-      >
-        <div className="flex items-center gap-2">
+      <form onSubmit={handleSend} className="sticky bottom-0 border-t border-brand-border/70 bg-brand-surface/95 px-4 py-4 backdrop-blur-xl sm:px-5">
+        <div className="flex items-center gap-2 rounded-[22px] border border-brand-border/70 bg-brand-background/70 p-2 shadow-sm">
+          <button
+            type="button"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-brand-border bg-brand-surface/80 text-brand-subtext transition hover:border-brand-primary/30 hover:text-brand-primary"
+            aria-label="Attach file"
+          >
+            <Paperclip size={18} />
+          </button>
           <input
             type="text"
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             placeholder="Type a message..."
-            className="w-full rounded-2xl border border-brand-border bg-brand-background px-4 py-2 text-sm text-brand-text outline-none"
+            className="min-w-0 flex-1 bg-transparent px-2 text-sm text-brand-text outline-none placeholder:text-brand-subtext/70"
             autoComplete="off"
           />
           <button
             type="submit"
-            className="rounded-2xl bg-brand-primary px-5 py-2 text-sm font-semibold text-white"
+            disabled={!draft.trim()}
+            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-2xl bg-gradient-to-r from-brand-primary to-brand-secondary px-4 text-sm font-black text-white shadow-glow transition-all duration-300 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Send
+            <Send size={16} />
+            <span className="hidden sm:inline">Send</span>
           </button>
         </div>
       </form>

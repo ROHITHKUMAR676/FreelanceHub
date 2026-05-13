@@ -23,24 +23,24 @@ const ProposalCard = ({
   const created = proposal.createdAt ? new Date(proposal.createdAt) : null
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex flex-col gap-3">
+    <div className="premium-card flex flex-col gap-3 p-4">
       <div className="flex justify-between items-start gap-3">
         <div className="space-y-0.5">
           {project && (
             <Link
               to={`/jobs/${project._id || project.id}`}
-              className="text-sm font-semibold text-gray-900 hover:text-blue-600"
+              className="text-sm font-semibold text-brand-text transition hover:text-brand-primary"
             >
               {project.title}
             </Link>
           )}
           {freelancer && (
-            <p className="text-sm font-semibold text-gray-900">
+            <p className="text-sm font-semibold text-brand-text">
               {freelancer.name || 'Freelancer'}
             </p>
           )}
           {created && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-brand-subtext">
               Submitted on {created.toLocaleDateString()}
             </p>
           )}
@@ -54,27 +54,27 @@ const ProposalCard = ({
         </span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 text-xs text-gray-700">
+      <div className="flex flex-wrap items-center gap-4 text-xs text-brand-subtext">
         <div>
-          <span className="text-gray-500">Bid:</span>{' '}
+          <span className="text-brand-subtext">Bid:</span>{' '}
           <span className="font-semibold">${proposal.bidAmount}</span>
         </div>
         <div>
-          <span className="text-gray-500">Delivery:</span>{' '}
+          <span className="text-brand-subtext">Delivery:</span>{' '}
           <span className="font-semibold">{proposal.deliveryTime} days</span>
         </div>
       </div>
 
       {proposal.coverLetter && (
-        <p className="text-xs text-gray-600 line-clamp-2">{proposal.coverLetter}</p>
+        <p className="line-clamp-2 text-xs text-brand-subtext">{proposal.coverLetter}</p>
       )}
 
-      <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+      <div className="flex items-center justify-between border-t border-brand-border pt-2">
         <Link
           to={`/proposals/${proposal.id}`}
-          className="text-xs font-medium text-blue-600 hover:text-blue-700"
+          className="text-xs font-semibold text-brand-primary transition hover:text-brand-secondary"
         >
-          View Details →
+          View Details
         </Link>
 
         <div className="flex flex-wrap gap-2">
@@ -84,7 +84,7 @@ const ProposalCard = ({
                 <button
                   type="button"
                   onClick={() => onEdit(proposal)}
-                  className="rounded-lg border border-gray-200 px-2.5 py-1 text-[11px] font-medium text-gray-700 hover:bg-gray-50"
+                  className="rounded-lg border border-brand-border bg-brand-surface/70 px-2.5 py-1 text-[11px] font-semibold text-brand-text transition hover:bg-brand-surface hover:shadow-sm"
                 >
                   Edit
                 </button>
@@ -139,4 +139,5 @@ const ProposalCard = ({
 }
 
 export default ProposalCard
+
 

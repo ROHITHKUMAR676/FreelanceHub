@@ -7,12 +7,12 @@ const MessageComposer = ({ value, onChange, onSend }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="sticky bottom-0 border-t border-gray-200 bg-white px-4 py-3 sm:px-6 lg:px-8"
+      className="sticky bottom-0 border-t border-brand-border/70 bg-brand-surface/85 px-4 py-3 shadow-panel backdrop-blur-xl sm:px-6 lg:px-8"
     >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <button
           type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-brand-border bg-brand-surface/80 text-brand-text transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-primary/40 hover:shadow-panel"
           aria-label="Attach file"
         >
           <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
@@ -31,13 +31,13 @@ const MessageComposer = ({ value, onChange, onSend }) => {
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder="Type your message"
-          className="h-11 w-full flex-1 rounded-xl border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500"
+          className="app-input h-11 flex-1 py-0 text-sm"
         />
 
         <button
           type="submit"
           disabled={!value.trim()}
-          className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-brand-primary px-4 text-sm font-medium text-white transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+          className="premium-button h-11 w-full px-4 py-0 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
         >
           Send
         </button>
@@ -47,3 +47,4 @@ const MessageComposer = ({ value, onChange, onSend }) => {
 }
 
 export default MessageComposer
+

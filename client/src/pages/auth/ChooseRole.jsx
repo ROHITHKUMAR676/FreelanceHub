@@ -1,10 +1,16 @@
+import RoleSelector from '../../components/auth/RoleSelector'
+import { useNavigate } from 'react-router-dom'
+
 function ChooseRole() {
-    return (
-      <div className="p-10">
-        <h1 className="text-3xl font-bold">Choose Role</h1>
-        <p>Select whether you are a Client or Freelancer.</p>
+  const navigate = useNavigate()
+
+  return (
+    <div className="premium-shell flex min-h-screen items-center justify-center px-4 py-10">
+      <div className="premium-card w-full max-w-3xl p-6 md:p-8">
+        <RoleSelector onSelect={(role) => navigate(`/register?role=${role}`)} />
       </div>
-    )
-  }
-  
-  export default ChooseRole
+    </div>
+  )
+}
+
+export default ChooseRole

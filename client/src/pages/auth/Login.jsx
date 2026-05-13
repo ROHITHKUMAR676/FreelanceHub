@@ -170,14 +170,17 @@ const Login = () => {
   }, [googleClientId, handleGoogleCredential])
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-brand-background bg-gradient-to-br from-brand-background via-white to-brand-background px-4 py-8 sm:px-6">
-      <div className="w-full max-w-md rounded-2xl border border-brand-border bg-brand-background p-6 shadow-lg">
+    <div className="premium-shell flex min-h-screen items-center justify-center px-4 py-8 sm:px-6">
+      <div className="premium-card-premium w-full max-w-md p-8 animate-scale-in premium-card-hover">
         <div className="space-y-1 text-center">
-          <h1 className="text-2xl font-semibold text-brand-text">Welcome Back</h1>
-          <p className="text-sm text-brand-text/70">Sign in to continue to FreelanceHub</p>
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-gold to-brand-emerald text-2xl font-bold text-white shadow-glow-gold animate-float">
+            F
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight premium-text-gradient">Welcome Back</h1>
+          <p className="text-sm text-brand-subtext">Sign in to continue to FreelanceHub</p>
         </div>
 
-        <form onSubmit={handleEmailLogin} className="mt-6 space-y-4">
+        <form onSubmit={handleEmailLogin} className="mt-8 space-y-6">
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium text-brand-text">
               Email
@@ -189,7 +192,7 @@ const Login = () => {
               value={formData.email}
               onChange={handleInputChange}
               required
-              className="w-full rounded-xl border border-brand-border bg-brand-background px-4 py-3 text-brand-text outline-none transition focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
+              className="app-input"
             />
           </div>
 
@@ -204,7 +207,7 @@ const Login = () => {
               value={formData.password}
               onChange={handleInputChange}
               required
-              className="w-full rounded-xl border border-brand-border bg-brand-background px-4 py-3 text-brand-text outline-none transition focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/30"
+              className="app-input"
             />
           </div>
 
@@ -213,7 +216,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-xl bg-brand-primary py-3 text-lg font-semibold text-white transition hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+            className="premium-button w-full py-3 text-base disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? 'Logging in...' : 'Login'}
           </button>

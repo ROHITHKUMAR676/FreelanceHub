@@ -2,24 +2,30 @@ import { Link } from 'react-router-dom'
 
 const Navbar = () => {
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <header className="sticky top-0 z-50 border-b border-brand-border/70 bg-brand-surface/80 shadow-panel backdrop-blur-2xl">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
 
-        <h1 className="text-xl font-bold text-blue-600">
-          FreelanceHub
-        </h1>
+        <Link to="/" className="group flex items-center gap-3">
+          <span className="flex h-11 w-11 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-primary to-brand-secondary text-lg font-bold text-white shadow-glow transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110">
+            F
+          </span>
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.32em] text-brand-subtext">FreelanceHub</p>
+            <p className="text-xs text-brand-subtext/80">Premium freelance marketplace</p>
+          </div>
+        </Link>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 sm:gap-5">
           <Link
             to="/login"
-            className="text-gray-700 hover:text-blue-600 text-sm font-medium"
+            className="text-sm font-semibold text-brand-text transition hover:text-brand-primary"
           >
             Login
           </Link>
 
           <Link
             to="/register"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700"
+            className="premium-button-gold px-5 py-3"
           >
             Sign Up
           </Link>
@@ -31,3 +37,4 @@ const Navbar = () => {
 }
 
 export default Navbar
+

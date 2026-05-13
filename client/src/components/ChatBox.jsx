@@ -65,7 +65,7 @@ const ChatBox = ({ recipient, messages: initialMessages = [], onSendMessage }) =
   }
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg shadow-md border border-gray-200">
+    <div className="flex flex-col h-full bg-brand-surface rounded-lg shadow-md border border-gray-200">
       {/* Chat Header */}
       <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
         <div className="flex items-center space-x-3">
@@ -101,7 +101,7 @@ const ChatBox = ({ recipient, messages: initialMessages = [], onSendMessage }) =
                   className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                     ownMessage
                       ? 'bg-blue-600 text-white'
-                      : 'bg-white text-gray-900 border border-gray-200'
+                      : 'bg-brand-surface text-gray-900 border border-gray-200'
                   }`}
                 >
                   {!ownMessage && (
@@ -126,7 +126,7 @@ const ChatBox = ({ recipient, messages: initialMessages = [], onSendMessage }) =
       </div>
 
       {/* Input Area */}
-      <form onSubmit={handleSend} className="px-6 py-4 border-t border-gray-200 bg-white rounded-b-lg">
+      <form onSubmit={handleSend} className="px-6 py-4 border-t border-gray-200 bg-brand-surface rounded-b-lg">
         <div className="flex items-center space-x-3">
           <input
             type="text"
@@ -162,5 +162,6 @@ const ChatBox = ({ recipient, messages: initialMessages = [], onSendMessage }) =
 }
 
 export default ChatBox
+
 
 

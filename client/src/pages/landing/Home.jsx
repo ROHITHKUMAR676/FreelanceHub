@@ -7,7 +7,7 @@ import Footer from '../../components/landing/Footer'
 
 function Home() {
   return (
-    <div className="bg-gray-50">
+    <div className="premium-shell">
       <Navbar />
       <HeroSection />
       <StatsSection />

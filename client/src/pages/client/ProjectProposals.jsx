@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import EmptyState from '../../components/ui/EmptyState'
+import PaymentExperienceModal from '../../components/ui/PaymentExperienceModal'
+import Skeleton from '../../components/ui/Skeleton'
+import TrustIndicator from '../../components/ui/TrustIndicator'
 import { fetchClientProposals, updateProposalStatus } from '../../services/proposalService'
 
 const ProjectProposals = () => {
@@ -12,6 +16,7 @@ const ProjectProposals = () => {
 
   const [acceptingProposal, setAcceptingProposal] = useState(null)
   const [escrowAmount, setEscrowAmount] = useState('')
+  const [paymentPhase, setPaymentPhase] = useState('idle')
 
   useEffect(() => {
     let active = true
@@ -51,16 +56,19 @@ const ProjectProposals = () => {
   const openAcceptModal = (proposal) => {
     setAcceptingProposal(proposal)
     setEscrowAmount(String(Number(proposal?.job?.budget || 0)))
+    setPaymentPhase('idle')
   }
 
   const closeAcceptModal = () => {
     setAcceptingProposal(null)
     setEscrowAmount('')
+    setPaymentPhase('idle')
   }
 
   const handleStatusUpdate = async ({ proposalId, status, amount }) => {
     try {
       setUpdatingId(proposalId)
+      if (status === 'accepted') setPaymentPhase('processing')
       setError('')
 
       const response = await updateProposalStatus({ proposalId, status, amount })
@@ -71,25 +79,30 @@ const ProjectProposals = () => {
       )
 
       if (status === 'accepted') {
-        closeAcceptModal()
+        setPaymentPhase('success')
+        window.setTimeout(closeAcceptModal, 850)
       }
     } catch (err) {
       console.error('[ProjectProposals.handleStatusUpdate] error', err)
       setError(err?.message || 'Failed to update proposal status')
+      setPaymentPhase('idle')
     } finally {
       setUpdatingId('')
     }
   }
 
   return (
-    <section className="mx-auto w-full max-w-6xl space-y-4 text-brand-text">
-      <div className="rounded-2xl border border-brand-border bg-brand-background p-5">
-        <h1 className="text-2xl font-semibold text-brand-text">Project Proposals</h1>
+    <section className="mx-auto w-full max-w-6xl space-y-5 text-brand-text">
+      <div className="premium-card-premium p-6">
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-brand-primary">Project shortlist</p>
+        <h1 className="mt-2 text-3xl font-black premium-text-gradient">Project Proposals</h1>
+        <p className="mt-2 text-sm text-brand-subtext">Evaluate candidates with trust signals and escrow-ready actions.</p>
       </div>
 
       {loading ? (
-        <div className="rounded-2xl border border-brand-border bg-brand-background p-5 text-sm text-brand-subtext">
-          Loading proposals...
+        <div className="grid gap-4">
+          <Skeleton className="h-40" />
+          <Skeleton className="h-40" />
         </div>
       ) : null}
 
@@ -100,40 +113,36 @@ const ProjectProposals = () => {
       ) : null}
 
       {!loading && !error && proposals.length === 0 ? (
-        <div className="rounded-2xl border border-brand-border bg-brand-background p-5 text-sm text-brand-subtext">
-          No proposals yet for this job.
-        </div>
+        <EmptyState title="No proposals for this job yet" text="When freelancers apply, their proposals and trust indicators will appear here." />
       ) : null}
 
       {!loading && !error && proposals.length > 0 ? (
-        <div className="space-y-3">
+        <div className="grid gap-4">
           {proposals.map((proposal) => (
-            <article
-              key={proposal._id}
-              className="rounded-2xl border border-brand-border bg-brand-background p-4"
-            >
-              <div className="flex flex-wrap items-start justify-between gap-3">
+            <article key={proposal._id} className="premium-card grid gap-5 p-5 lg:grid-cols-[1fr_19rem]">
+              <div>
+                <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-base font-semibold text-brand-text">
+                  <p className="text-lg font-black text-brand-text">
                     {proposal.freelancer?.name || 'Freelancer'}
                   </p>
                   <p className="text-sm text-brand-subtext">{proposal.freelancer?.email || 'No email'}</p>
                 </div>
 
-                <span className="rounded-xl border border-brand-border bg-brand-messageReceived px-3 py-1 text-xs font-medium capitalize text-brand-text">
+                <span className="rounded-full border border-brand-border bg-brand-messageReceived px-3 py-1 text-xs font-bold capitalize text-brand-text">
                   {proposal.status}
                 </span>
               </div>
 
-              <p className="mt-3 whitespace-pre-wrap text-sm text-brand-text">{proposal.text}</p>
+              <p className="mt-4 whitespace-pre-wrap text-sm leading-6 text-brand-text">{proposal.text}</p>
 
               {proposal.status === 'pending' ? (
-                <div className="mt-4 flex items-center gap-2">
+                <div className="mt-5 flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     onClick={() => openAcceptModal(proposal)}
                     disabled={updatingId === proposal._id}
-                    className="rounded-xl bg-brand-primary px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+                    className="premium-button px-4 py-2.5 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     Accept Proposal
                   </button>
@@ -141,24 +150,36 @@ const ProjectProposals = () => {
                     type="button"
                     onClick={() => handleStatusUpdate({ proposalId: proposal._id, status: 'rejected' })}
                     disabled={updatingId === proposal._id}
-                    className="rounded-xl border border-brand-border bg-brand-background px-4 py-2 text-sm font-medium text-brand-text disabled:cursor-not-allowed disabled:opacity-60"
+                    className="premium-ghost-button px-4 py-2.5 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     Reject
                   </button>
                 </div>
               ) : null}
+              </div>
+              <TrustIndicator freelancer={proposal.freelancer} proposal={proposal} />
             </article>
           ))}
         </div>
       ) : null}
 
-      {acceptingProposal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-brand-background/80 px-4">
-          <div className="w-full max-w-md rounded-2xl border border-brand-border bg-brand-background p-5">
-            <h2 className="text-lg font-semibold text-brand-text">Pay & Start Project</h2>
-            <p className="mt-1 text-sm text-brand-subtext">Set escrow amount before project starts.</p>
-
-            <label htmlFor="project-escrow-amount" className="mt-4 block text-sm font-medium text-brand-text">
+      <PaymentExperienceModal
+        open={Boolean(acceptingProposal)}
+        title={`Start ${acceptingProposal?.job?.title || 'project'}`}
+        amount={escrowAmount}
+        isProcessing={paymentPhase === 'processing'}
+        isSuccess={paymentPhase === 'success'}
+        error={error}
+        onCancel={closeAcceptModal}
+        onConfirm={() =>
+          handleStatusUpdate({
+            proposalId: acceptingProposal._id,
+            status: 'accepted',
+            amount: Number(escrowAmount),
+          })
+        }
+      >
+        <label htmlFor="project-escrow-amount" className="block text-sm font-bold text-brand-text">
               Amount
             </label>
             <input
@@ -168,35 +189,9 @@ const ProjectProposals = () => {
               value={escrowAmount}
               onChange={(event) => setEscrowAmount(event.target.value)}
               placeholder={String(acceptingDefaultBudget)}
-              className="mt-2 w-full rounded-xl border border-brand-border bg-brand-background px-3 py-2 text-sm text-brand-text"
+              className="app-input mt-2"
             />
-
-            <div className="mt-5 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={closeAcceptModal}
-                className="rounded-xl border border-brand-border bg-brand-background px-4 py-2 text-sm font-medium text-brand-text"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  handleStatusUpdate({
-                    proposalId: acceptingProposal._id,
-                    status: 'accepted',
-                    amount: Number(escrowAmount),
-                  })
-                }
-                disabled={updatingId === acceptingProposal._id}
-                className="rounded-xl bg-brand-primary px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                Pay & Start Project
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      </PaymentExperienceModal>
     </section>
   )
 }

@@ -13,22 +13,22 @@ const ChatWindow = ({ conversation, project, messages, currentUserId, onSendMess
 
   if (!conversation) {
     return (
-      <div className="flex h-full items-center justify-center text-sm text-gray-500">
+      <div className="flex h-full items-center justify-center text-sm text-brand-subtext premium-bg-gradient rounded-3xl">
         Select a conversation to start chatting.
       </div>
     )
   }
 
   return (
-    <div className="flex h-full flex-col bg-white rounded-xl border border-gray-200 shadow-sm">
-      <div className="border-b border-gray-200 px-4 py-3">
-        <h2 className="text-sm font-semibold text-gray-900">
+    <div className="flex h-full flex-col premium-card-premium premium-card-hover rounded-3xl overflow-hidden">
+      <div className="border-b border-brand-border/50 px-6 py-4 premium-bg-gradient">
+        <h2 className="text-lg font-semibold premium-text-gradient">
           {project?.title || 'Project Conversation'}
         </h2>
-        <p className="text-xs text-gray-500">Project-based chat between client and freelancer</p>
+        <p className="text-sm text-brand-subtext">Project-based chat between client and freelancer</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto bg-gray-50 px-4 py-3 space-y-2">
+      <div className="flex-1 overflow-y-auto premium-bg-gradient px-6 py-4 space-y-4">
         {messages.map((m) => (
           <MessageBubble key={m.id} message={m} isOwn={m.senderId === currentUserId} />
         ))}

@@ -1,31 +1,40 @@
 import { useState } from 'react'
 import { useContext } from 'react'
 import { AuthContext } from '../../context/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { registerWithEmail } from '../../services/authService'
+import { saveProfileSignals } from '../../utils/profileSignals'
 
 const roles = [
   {
     type: 'client',
     title: 'Client',
     desc: 'Post tasks and hire skilled freelancers.',
+    accent: 'from-brand-primary to-sky-400',
   },
   {
     type: 'freelancer',
     title: 'Freelancer',
     desc: 'Find work and complete projects.',
+    accent: 'from-brand-secondary to-emerald-400',
   },
 ]
 
 const Register = () => {
   const { login } = useContext(AuthContext)
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const initialRole = searchParams.get('role')
 
-  const [selectedRole, setSelectedRole] = useState('')
+  const [selectedRole, setSelectedRole] = useState(
+    roles.some((role) => role.type === initialRole) ? initialRole : '',
+  )
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
+    linkedinUrl: '',
+    githubUrl: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -65,7 +74,16 @@ const Register = () => {
       })
 
       const authResponse = await registerWithEmail(payload)
+      if (selectedRole === 'freelancer') {
+        saveProfileSignals(payload.email, {
+          linkedinUrl: formData.linkedinUrl.trim(),
+          githubUrl: formData.githubUrl.trim(),
+          profileCompletion: 70,
+        })
+      }
       login(authResponse)
+      localStorage.removeItem('freelancehub:onboarding-complete')
+      localStorage.setItem('freelancehub:show-onboarding', 'true')
 
       const role = authResponse?.user?.role || selectedRole
 
@@ -83,10 +101,10 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen bg-brand-background px-4 py-8 sm:px-6">
-      <div className="mx-auto w-full max-w-4xl rounded-2xl border border-brand-border bg-brand-background p-5 sm:p-6 md:p-8">
+    <div className="premium-shell min-h-screen px-4 py-8 sm:px-6">
+      <div className="premium-card mx-auto w-full max-w-4xl p-5 sm:p-6 md:p-8 animate-fade-up">
 
-        <h2 className="text-center text-2xl font-bold text-brand-text sm:text-3xl">
+        <h2 className="text-center text-2xl font-black text-brand-text sm:text-3xl">
           Create Your Account
         </h2>
 
@@ -94,21 +112,22 @@ const Register = () => {
           Join FreelanceHub and start your journey
         </p>
 
-        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 stagger-in">
           {roles.map((role) => (
             <div
               key={role.type}
               onClick={() => setSelectedRole(role.type)}
-              className={`cursor-pointer rounded-xl border p-4 transition sm:p-5 ${
+              className={`group cursor-pointer rounded-2xl border p-4 transition-all duration-300 sm:p-5 ${
                 selectedRole === role.type
-                  ? 'border-brand-border bg-brand-primary'
-                  : 'border-brand-border bg-brand-background'
+                  ? 'border-transparent bg-gradient-to-br from-brand-primary to-brand-secondary shadow-glow'
+                  : 'border-brand-border bg-brand-surface/70 hover:-translate-y-1 hover:border-brand-primary/30 hover:bg-brand-surface hover:shadow-panel'
               }`}
             >
-              <h3 className="text-lg font-semibold text-brand-text">
+              <div className={`mb-4 h-10 w-10 rounded-2xl bg-gradient-to-br ${role.accent} shadow-glow transition duration-300 group-hover:rotate-3 group-hover:scale-110`} />
+              <h3 className={`text-lg font-semibold ${selectedRole === role.type ? 'text-white' : 'text-brand-text'}`}>
                 {role.title}
               </h3>
-              <p className="mt-2 text-sm text-brand-subtext">
+              <p className={`mt-2 text-sm ${selectedRole === role.type ? 'text-white/85' : 'text-brand-subtext'}`}>
                 {role.desc}
               </p>
             </div>
@@ -116,7 +135,7 @@ const Register = () => {
         </div>
 
         {selectedRole && (
-          <form onSubmit={handleSubmit} className="mx-auto mt-8 w-full max-w-md space-y-4">
+          <form onSubmit={handleSubmit} className="mx-auto mt-8 w-full max-w-md space-y-4 animate-fade-up">
 
             <input
               type="text"
@@ -124,7 +143,7 @@ const Register = () => {
               placeholder="Full Name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full rounded-xl border border-brand-border bg-brand-background px-3 py-3 text-base text-brand-text"
+              className="app-input"
               required
             />
 
@@ -134,7 +153,7 @@ const Register = () => {
               placeholder="Email Address"
               value={formData.email}
               onChange={handleChange}
-              className="w-full rounded-xl border border-brand-border bg-brand-background px-3 py-3 text-base text-brand-text"
+              className="app-input"
               required
             />
 
@@ -144,16 +163,42 @@ const Register = () => {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full rounded-xl border border-brand-border bg-brand-background px-3 py-3 text-base text-brand-text"
+              className="app-input"
               required
             />
+
+            {selectedRole === 'freelancer' ? (
+              <div className="grid gap-3 animate-fade-up">
+                <input
+                  type="url"
+                  name="linkedinUrl"
+                  placeholder="LinkedIn URL (optional)"
+                  value={formData.linkedinUrl}
+                  onChange={handleChange}
+                  className="app-input"
+                />
+
+                <input
+                  type="url"
+                  name="githubUrl"
+                  placeholder="GitHub URL (optional)"
+                  value={formData.githubUrl}
+                  onChange={handleChange}
+                  className="app-input"
+                />
+
+                <p className="rounded-2xl border border-brand-primary/20 bg-brand-primary/10 px-3 py-2 text-xs leading-5 text-brand-subtext">
+                  These profile links are stored safely in the frontend profile layer and help clients understand your Trust Level.
+                </p>
+              </div>
+            ) : null}
 
             {error && <p className="text-sm text-red-500">{error}</p>}
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-xl bg-brand-primary px-4 py-3 font-semibold text-white transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+              className="premium-button w-full disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting ? 'Creating account...' : `Register as ${selectedRole}`}
             </button>
@@ -166,3 +211,4 @@ const Register = () => {
 }
 
 export default Register
+

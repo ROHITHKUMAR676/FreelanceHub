@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   const logout = useCallback(
-    ({ redirectToLogin = true } = {}) => {
+    ({ redirectToLogin = false } = {}) => {
       localStorage.removeItem('user')
       localStorage.removeItem('token')
       setUser(null)
@@ -61,6 +61,8 @@ export const AuthProvider = ({ children }) => {
 
       if (redirectToLogin) {
         navigate('/login', { replace: true })
+      } else {
+        navigate('/', { replace: true })
       }
     },
     [navigate],
