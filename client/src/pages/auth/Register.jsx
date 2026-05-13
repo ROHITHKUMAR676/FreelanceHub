@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { useContext } from 'react'
 import { AuthContext } from '../../context/AuthContext'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { registerWithEmail } from '../../services/authService'
+import { registerWithEmail, sendRegistrationOTP, verifyRegistrationOTP } from '../../services/authService'
 import { saveProfileSignals } from '../../utils/profileSignals'
+import OTPInput from '../../components/ui/OTPInput'
 
 const roles = [
   {
@@ -38,6 +39,9 @@ const Register = () => {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [step, setStep] = useState('form') // 'form' or 'otp'
+  const [otp, setOtp] = useState('')
+  const [registrationEmail, setRegistrationEmail] = useState('')
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -74,15 +78,38 @@ const Register = () => {
     setIsSubmitting(true)
 
     try {
-      console.log('[register] sending request', {
+      console.log('[register] sending OTP request', {
         name: payload.name,
         email: payload.email,
         role: payload.role,
       })
 
-      const authResponse = await registerWithEmail(payload)
+      const response = await registerWithEmail(payload)
+      setRegistrationEmail(payload.email)
+      setStep('otp')
+    } catch (err) {
+      console.error('[register] failed', err)
+      const message = err?.message || 'Failed to send OTP'
+      const isEmailDuplicate = err?.status === 409 || /email.*exists|already.*email|duplicate.*email/i.test(message)
+      setError(isEmailDuplicate ? 'This email address is already registered.' : message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleVerifyOTP = async () => {
+    if (otp.length !== 4) {
+      setError('Please enter the complete 4-digit OTP')
+      return
+    }
+
+    setIsSubmitting(true)
+    setError('')
+
+    try {
+      const authResponse = await verifyRegistrationOTP(registrationEmail, otp)
       if (selectedRole === 'freelancer') {
-        saveProfileSignals(payload.email, {
+        saveProfileSignals(registrationEmail, {
           linkedinUrl: formData.linkedinUrl.trim(),
           githubUrl: formData.githubUrl.trim(),
           profileCompletion: 70,
@@ -100,33 +127,54 @@ const Register = () => {
         navigate('/client/dashboard')
       }
     } catch (err) {
-      console.error('[register] failed', err)
-      const message = err?.message || 'Registration failed'
-      const isEmailDuplicate = err?.status === 409 || /email.*exists|already.*email|duplicate.*email/i.test(message)
-      setError(isEmailDuplicate ? 'This email address is already registered.' : message)
+      console.error('[verify OTP] failed', err)
+      setError(err?.message || 'OTP verification failed')
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  const handleResendOTP = async () => {
+    setIsSubmitting(true)
+    setError('')
+
+    try {
+      await sendRegistrationOTP(registrationEmail)
+      setError('') // Clear any previous errors
+    } catch (err) {
+      setError('Failed to resend OTP')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleBackToForm = () => {
+    setStep('form')
+    setOtp('')
+    setError('')
+    setRegistrationEmail('')
+  }
+
   return (
-    <div className="premium-shell min-h-screen px-4 py-8 sm:px-6">
-      <div className="premium-card mx-auto w-full max-w-4xl p-5 sm:p-6 md:p-8 animate-fade-up">
+    <div className="premium-shell min-h-screen overflow-x-hidden px-4 py-6 sm:px-6 sm:py-8">
+      <div className="premium-card mx-auto w-full max-w-4xl overflow-hidden p-4 sm:p-6 md:p-8 animate-fade-up">
 
-        <h2 className="text-center text-2xl font-black text-brand-text sm:text-3xl">
-          Create Your Account
-        </h2>
+        {step === 'form' ? (
+          <>
+            <h2 className="text-center text-2xl leading-tight font-black text-brand-text sm:text-3xl">
+              Create Your Account
+            </h2>
 
-        <p className="mt-2 text-center text-sm text-brand-subtext sm:text-base">
-          Join FreelanceHub and start your journey
-        </p>
+            <p className="mt-2 text-center text-sm text-brand-subtext sm:text-base">
+              Join FreelanceHub and start your journey
+            </p>
 
         <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 stagger-in">
           {roles.map((role) => (
             <div
               key={role.type}
               onClick={() => setSelectedRole(role.type)}
-              className={`group cursor-pointer rounded-2xl border p-4 transition-all duration-300 sm:p-5 ${
+              className={`group cursor-pointer rounded-2xl border p-4 min-h-[140px] transition-all duration-300 sm:p-5 ${
                 selectedRole === role.type
                   ? 'border-transparent bg-gradient-to-br from-brand-primary to-brand-secondary shadow-glow'
                   : 'border-brand-border bg-brand-surface/70 hover:-translate-y-1 hover:border-brand-primary/30 hover:bg-brand-surface hover:shadow-panel'
@@ -144,7 +192,7 @@ const Register = () => {
         </div>
 
         {selectedRole && (
-          <form onSubmit={handleSubmit} className="mx-auto mt-8 w-full max-w-md space-y-4 animate-fade-up">
+          <form onSubmit={handleSubmit} className="mx-auto mt-8 w-full max-w-md space-y-4 px-1 animate-fade-up">
 
             <input
               type="text"
@@ -209,10 +257,65 @@ const Register = () => {
               disabled={isSubmitting}
               className="premium-button w-full disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmitting ? 'Creating account...' : `Register as ${selectedRole}`}
+              {isSubmitting ? 'Sending OTP...' : `Continue as ${selectedRole}`}
             </button>
 
           </form>
+        )}
+          </>
+        ) : (
+          <>
+            <div className="text-center">
+              <h2 className="text-2xl font-black text-brand-text sm:text-3xl">
+                Verify Your Email
+              </h2>
+
+              <p className="mt-2 break-all text-sm text-brand-subtext sm:text-base">
+                We've sent a 4-digit code to <strong>{registrationEmail}</strong>
+              </p>
+            </div>
+
+            <div className="mx-auto mt-8 w-full max-w-md space-y-6 rounded-[28px] border border-brand-border bg-brand-surface/80 p-5 shadow-panel animate-fade-up sm:p-6">
+              <OTPInput
+                value={otp}
+                onChange={setOtp}
+                length={4}
+                disabled={isSubmitting}
+                error={error}
+                label="Enter verification code"
+                placeholder="0"
+              />
+
+              <div className="flex flex-col gap-3">
+                <button
+                  type="button"
+                  onClick={handleVerifyOTP}
+                  disabled={isSubmitting || otp.length !== 4}
+                  className="premium-button w-full disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Verifying...' : 'Verify & Complete Registration'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleResendOTP}
+                  disabled={isSubmitting}
+                  className="premium-ghost-button w-full disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Resend Code
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleBackToForm}
+                  disabled={isSubmitting}
+                  className="text-sm font-semibold text-brand-primary transition hover:text-brand-secondary disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Back to Registration
+                </button>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </div>

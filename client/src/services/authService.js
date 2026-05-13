@@ -7,6 +7,20 @@ export const registerWithEmail = async ({ name, email, password, role }) => {
   })
 }
 
+export const sendRegistrationOTP = async (email) => {
+  return sendJson('/api/auth/register/send-otp', {
+    method: 'POST',
+    body: { email },
+  })
+}
+
+export const verifyRegistrationOTP = async (email, otp) => {
+  return sendJson('/api/auth/register/verify-otp', {
+    method: 'POST',
+    body: { email, otp },
+  })
+}
+
 export const loginWithEmail = async ({ email, password }) => {
   return sendJson('/api/auth/login', {
     method: 'POST',

@@ -4,6 +4,7 @@ import EmptyState from '../../components/ui/EmptyState'
 import PaymentExperienceModal from '../../components/ui/PaymentExperienceModal'
 import TrustIndicator from '../../components/ui/TrustIndicator'
 import { fetchClientProposals, updateProposalStatus } from '../../services/proposalService'
+import { sendPaymentOTP, verifyPaymentOTP } from '../../services/paymentService'
 
 const AllProposals = () => {
   const [proposals, setProposals] = useState([])
@@ -49,10 +50,19 @@ const AllProposals = () => {
     return Number(acceptingProposal?.job?.budget || 0)
   }, [acceptingProposal])
 
-  const openAcceptModal = (proposal) => {
+  const openAcceptModal = async (proposal) => {
     setAcceptingProposal(proposal)
     setEscrowAmount(String(Number(proposal?.job?.budget || 0)))
     setPaymentPhase('idle')
+
+    // Send OTP for payment verification
+    try {
+      const amountValue = Number(proposal?.job?.budget || 0)
+      await sendPaymentOTP(amountValue, proposal.job._id)
+    } catch (err) {
+      console.error('[AllProposals.openAcceptModal] OTP send failed', err)
+      setError('Failed to send payment verification code')
+    }
   }
 
   const closeAcceptModal = () => {
@@ -82,7 +92,7 @@ const AllProposals = () => {
     }
   }
 
-  const handlePayAndStart = async () => {
+  const handlePayAndStart = async (otp) => {
     if (!acceptingProposal) return
 
     const proposalId = acceptingProposal._id
@@ -94,9 +104,13 @@ const AllProposals = () => {
     }
 
     try {
-      setUpdatingId(proposalId)
+      setPaymentPhase('processing')
       setError('')
 
+      // First verify the OTP
+      await verifyPaymentOTP(otp)
+
+      // Then accept the proposal
       const response = await updateProposalStatus({
         proposalId,
         status: 'accepted',
@@ -115,10 +129,8 @@ const AllProposals = () => {
       window.setTimeout(closeAcceptModal, 850)
     } catch (err) {
       console.error('[AllProposals.handlePayAndStart] error', err)
-      setError(err?.message || 'Failed to accept proposal')
+      setError(err?.message || 'Payment verification failed')
       setPaymentPhase('idle')
-    } finally {
-      setUpdatingId('')
     }
   }
 

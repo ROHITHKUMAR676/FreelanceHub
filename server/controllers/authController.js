@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { OAuth2Client } from 'google-auth-library'
 import User from '../models/User.js'
+import { generateOTP, sendOTPEmail, storeOTP, verifyOTP } from '../utils/otpUtils.js'
 
 const isValidEmail = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -74,28 +75,98 @@ export const register = async (req, res) => {
       return res.status(409).json({ message: 'Email already exists' })
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10)
+    // Generate and send OTP
+    const otp = generateOTP()
+    await sendOTPEmail(normalizedEmail, otp, 'registration')
+    storeOTP(normalizedEmail, otp, 'registration')
 
-    const user = await User.create({
+    // Store registration data temporarily (in production, use Redis or temp storage)
+    const tempData = {
       name: normalizedName,
       email: normalizedEmail,
-      password: hashedPassword,
+      password,
       role: normalizedRole,
-    })
+      expiresAt: Date.now() + 10 * 60 * 1000 // 10 minutes
+    }
+    // Store in memory for now (use proper storage in production)
+    global.tempRegistrations = global.tempRegistrations || new Map()
+    global.tempRegistrations.set(normalizedEmail, tempData)
 
-    console.log('[auth.register] user created', {
-      userId: user._id.toString(),
-      email: user.email,
-      role: user.role,
-      hasPassword: Boolean(user.password),
-    })
-
-    return res.status(201).json({
-      message: 'User registered successfully',
-      ...buildAuthResponse(user),
+    return res.status(200).json({
+      message: 'OTP sent to your email. Please verify to complete registration.',
+      email: normalizedEmail
     })
   } catch (error) {
     console.error('[auth.register] error', error)
+    return res.status(500).json({ message: error.message || 'Server error' })
+  }
+}
+
+export const sendRegistrationOTP = async (req, res) => {
+  try {
+    const { email } = req.body || {}
+    const normalizedEmail = typeof email === 'string' ? email.toLowerCase().trim() : ''
+
+    if (!normalizedEmail || !isValidEmail(normalizedEmail)) {
+      return res.status(400).json({ message: 'Valid email is required' })
+    }
+
+    const otp = generateOTP()
+    await sendOTPEmail(normalizedEmail, otp, 'registration')
+    storeOTP(normalizedEmail, otp, 'registration')
+
+    return res.status(200).json({ message: 'OTP sent successfully' })
+  } catch (error) {
+    console.error('[auth.sendRegistrationOTP] error', error)
+    return res.status(500).json({ message: 'Failed to send OTP' })
+  }
+}
+
+export const verifyRegistrationOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body || {}
+    const normalizedEmail = typeof email === 'string' ? email.toLowerCase().trim() : ''
+
+    if (!normalizedEmail || !otp) {
+      return res.status(400).json({ message: 'Email and OTP are required' })
+    }
+
+    if (!verifyOTP(normalizedEmail, otp, 'registration')) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' })
+    }
+
+    // Get temp registration data
+    global.tempRegistrations = global.tempRegistrations || new Map()
+    const tempData = global.tempRegistrations.get(normalizedEmail)
+
+    if (!tempData || Date.now() > tempData.expiresAt) {
+      return res.status(400).json({ message: 'Registration session expired. Please start over.' })
+    }
+
+    // Create user
+    const hashedPassword = await bcrypt.hash(tempData.password, 10)
+    const user = await User.create({
+      name: tempData.name,
+      email: tempData.email,
+      password: hashedPassword,
+      role: tempData.role,
+    })
+
+    // Clean up temp data
+    global.tempRegistrations.delete(normalizedEmail)
+
+    console.log('[auth.verifyRegistrationOTP] user created', {
+      userId: user._id.toString(),
+      email: user.email,
+      role: user.role,
+    })
+
+    return res.status(201).json({
+      message: 'Registration completed successfully',
+      ...buildAuthResponse(user),
+    })
+  } catch (error) {
+    console.error('[auth.verifyRegistrationOTP] error', error)
     return res.status(500).json({ message: error.message || 'Server error' })
   }
 }
