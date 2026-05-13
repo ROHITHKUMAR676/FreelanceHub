@@ -4,7 +4,7 @@ import { Paperclip, Send, Sparkles } from 'lucide-react'
 import { AuthContext } from '../../context/AuthContext'
 import { getJson } from '../../utils/api'
 
-const SOCKET_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+const SOCKET_URL = import.meta.env.VITE_API_BASE_URL 
 
 const getMessageId = (message) => {
   if (!message) return null
