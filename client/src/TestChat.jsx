@@ -7,7 +7,7 @@ export default function TestChat() {
   useEffect(() => {
     if (socketRef.current) return; // prevent double connection
 
-    const socket = io(import.meta.env.VITE_API_URL);
+    const socket = io(import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL);
     socketRef.current = socket;
 
     const conversationId = "test123";

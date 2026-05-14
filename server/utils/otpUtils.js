@@ -3,11 +3,25 @@ import crypto from 'crypto'
 
 // Create transporter
 const createTransporter = () => {
+  const user = process.env.EMAIL_USER
+  const pass = process.env.EMAIL_PASS
+  const service = process.env.EMAIL_SERVICE || 'gmail'
+  const host = process.env.EMAIL_HOST || 'smtp.gmail.com'
+  const port = Number(process.env.EMAIL_PORT || 465)
+  const secure = process.env.EMAIL_SECURE !== 'false'
+
+  if (!user || !pass) {
+    throw new Error('EMAIL_USER and EMAIL_PASS must be set in server environment variables')
+  }
+
   return nodemailer.createTransport({
-    service: 'gmail', // or your email service
+    service,
+    host,
+    port,
+    secure,
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user,
+      pass,
     },
   })
 }

@@ -1,4 +1,8 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL
+
+if (!API_BASE_URL) {
+  throw new Error('Missing VITE_API_BASE_URL or VITE_API_URL environment variable')
+}
 
 export const buildApiUrl = (path) => {
   const normalized = path.startsWith('/') ? path : `/${path}`
